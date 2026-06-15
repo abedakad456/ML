@@ -2,6 +2,14 @@ import pandas as pd
 import numpy as np
 import re
 
+def fill_missing_text(df: pd.DataFrame) -> pd.DataFrame:
+    """Fills missing values in text columns before feature engineering."""
+    df_out = df.copy()
+    # If the AI didn't need a tool, tool_names might be NaN.
+    df_out['tool_names'] = df_out['tool_names'].fillna("")
+    df_out['query'] = df_out['query'].fillna("")
+    return df_out
+
 def calculate_required_params_ratio(row):
     """Formula: total_required_params / total_params. If total_params == 0, set to 0."""
     if pd.isna(row.get('total_params')) or row.get('total_params', 0) == 0:
@@ -16,7 +24,7 @@ def calculate_avg_params_per_tool(row):
 
 def calculate_query_avg_word_length(row):
     """Average length of the words in the raw query."""
-    query = str(row.get('raw_query', ''))
+    query = str(row.get('query', ''))
     if query == 'nan' or not query.strip():
         return 0.0
     words = query.split()
@@ -24,7 +32,7 @@ def calculate_query_avg_word_length(row):
 
 def calculate_query_mentions_number(row):
     """1 if the raw query contains at least one digit, otherwise 0."""
-    query = str(row.get('raw_query', ''))
+    query = str(row.get('query', ''))
     if query == 'nan' or not query.strip():
         return 0
     return 1 if re.search(r'\d', query) else 0

@@ -22,20 +22,20 @@ def calculate_avg_params_per_tool(row):
         return 0.0
     return row['total_params'] / row['num_available_tools']
 
-def calculate_query_avg_word_length(row):
+def calculate_query_avg_word_length(text):
     """Average length of the words in the raw query."""
-    query = str(row.get('query', ''))
-    if query == 'nan' or not query.strip():
+    text = str(text)
+    if text == 'nan' or not text.strip():
         return 0.0
-    words = query.split()
+    words = text.split()
     return sum(len(word) for word in words) / len(words)
 
-def calculate_query_mentions_number(row):
+def calculate_query_mentions_number(text):
     """1 if the raw query contains at least one digit, otherwise 0."""
-    query = str(row.get('query', ''))
-    if query == 'nan' or not query.strip():
+    text = str(text)
+    if text == 'nan' or not text.strip():
         return 0
-    return 1 if re.search(r'\d', query) else 0
+    return 1 if re.search(r'\d', text) else 0
 
 def calculate_tool_name_diversity(row):
     """Number of unique tool-name prefixes before the first dot."""
@@ -60,8 +60,9 @@ def build_mandatory_features(df: pd.DataFrame) -> pd.DataFrame:
     
     df_out['required_params_ratio'] = df_out.apply(calculate_required_params_ratio, axis=1)
     df_out['avg_params_per_tool'] = df_out.apply(calculate_avg_params_per_tool, axis=1)
-    df_out['query_avg_word_length'] = df_out.apply(calculate_query_avg_word_length, axis=1)
-    df_out['query_mentions_number'] = df_out.apply(calculate_query_mentions_number, axis=1)
     df_out['tool_name_diversity'] = df_out.apply(calculate_tool_name_diversity, axis=1)
+
+    df_out['query_avg_word_length'] = df_out['query'].apply(calculate_query_avg_word_length)
+    df_out['query_mentions_number'] = df_out['query'].apply(calculate_query_mentions_number)
     
     return df_out

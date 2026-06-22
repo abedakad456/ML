@@ -43,7 +43,7 @@ def plot_metric_comparison(metrics_df):
     plt.figure(figsize=(10, 6))
     sns.barplot(data=plot_data, x='Metric', y='Score', hue='Model')
     
-    plt.title('C.4 Evaluation: Model Performance Comparison on Test Set')
+    plt.title('Evaluation: Model Performance Comparison on Test Set')
     plt.ylim(0, 1.05) # Metrics go from 0 to 1
     plt.legend(loc='lower right')
     plt.show()
